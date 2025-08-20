@@ -3,7 +3,7 @@ import 'package:synapse/core/domain/entities/shared_content.dart';
 import 'package:synapse/core/domain/entities/shared_attachment.dart' as synapse_attachment;
 
 class SharedContentModel extends SharedContent {
-  SharedContentModel({
+  const SharedContentModel({
     super.conversationIdentifier,
     super.content,
     required super.attachments,
@@ -16,12 +16,12 @@ class SharedContentModel extends SharedContent {
       content: media.content,
       attachments: media.attachments?.map(_mapAttachment).toList() ?? [],
       receivedAt: DateTime.now()
-    )
+    );
   }
 
   static synapse_attachment.SharedAttachment _mapAttachment(SharedAttachment? attachment) {
     if(attachment == null){
-      return const synapse_attachment.SharedAttachment(type: synapse_attachment.SharedAttachmentType.unknown)
+      return const synapse_attachment.SharedAttachment(type: synapse_attachment.SharedAttachmentType.unknown);
     }
 
     synapse_attachment.SharedAttachmentType type;
