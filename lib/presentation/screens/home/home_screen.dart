@@ -16,13 +16,12 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Profile + Title
               Row(
                 children: [
                   const CircleAvatar(
                     radius: 20,
                     backgroundImage: NetworkImage(
-                      "https://i.pravatar.cc/150?img=47", // sample image
+                      "https://i.pravatar.cc/150?img=47",
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -34,7 +33,6 @@ class HomeScreen extends StatelessWidget {
 
 
 
-              // Recent Screenshots
               const SectionTitle(title: "Recent Screenshots"),
               const SizedBox(height: 8),
               SizedBox(
@@ -61,16 +59,24 @@ class HomeScreen extends StatelessWidget {
                 runSpacing: 12,
                 children: const [
                   QuickAccessButton(icon: Icons.image, label: "Capture"),
-                  QuickAccessButton(icon: Icons.account_tree, label: "Mind Map"),
                   QuickAccessButton(icon: Icons.calendar_today, label: "Calendar"),
                 ],
               ),
               const SizedBox(height: 20),
 
-              // Upcoming Reminders
               const SectionTitle(title: "Upcoming Reminders"),
               const ReminderTile(title: "Meeting with Sophia", time: "10:00 AM"),
               const ReminderTile(title: "Project Deadline", time: "2:00 PM"),
+              const ReminderTile(title: "Meeting with Sophia", time: "10:00 AM"),
+              const ReminderTile(title: "Project Deadline", time: "2:00 PM"),
+              const ReminderTile(title: "Meeting with Sophia", time: "10:00 AM"),
+              const ReminderTile(title: "Project Deadline", time: "2:00 PM"),
+              const ReminderTile(title: "Meeting with Sophia", time: "10:00 AM"),
+              const ReminderTile(title: "Project Deadline", time: "2:00 PM"), const ReminderTile(title: "Meeting with Sophia", time: "10:00 AM"),
+              const ReminderTile(title: "Project Deadline", time: "2:00 PM"), const ReminderTile(title: "Meeting with Sophia", time: "10:00 AM"),
+              const ReminderTile(title: "Project Deadline", time: "2:00 PM"),
+
+
             ],
           ),
         ),

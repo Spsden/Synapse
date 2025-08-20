@@ -9,7 +9,7 @@ class ScreenshotCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200, // control width while height is taken from parent SizedBox
+      width: 250,
       margin: const EdgeInsets.only(right: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -19,7 +19,7 @@ class ScreenshotCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
                 imageUrl,
-                fit: BoxFit.cover,   // fills container height
+                fit: BoxFit.cover,
                 width: double.infinity,
               ),
             ),
