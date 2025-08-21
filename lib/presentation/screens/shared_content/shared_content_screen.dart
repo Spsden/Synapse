@@ -39,45 +39,30 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
   Widget _buildBody(SharedContentState state) {
     switch (state.runtimeType) {
       case SharedContentInitial:
-        return const Text('Initializing...');
+        return const Center(child: Text('Initializing...'));
 
       case SharedContentInitializing:
-        return const CircularProgressIndicator();
+        return const Center(child: CircularProgressIndicator());
 
       case SharedContentReady:
-        return const Text('Ready to receive shared content');
+        return const Center(child: Text('Ready to receive shared content'));
 
       case SharedContentReceiving:
         final receivingState = state as SharedContentReceiving;
         return _buildContentDisplay(receivingState.content);
 
-      // case SharedContentProcessing:
-      //   final processingState = state as SharedContentProcessing;
-      //   return Column(
-      //     children: [
-      //       const CircularProgressIndicator(),
-      //       const SizedBox(height: 16),
-      //       const Text('Processing with AI...'),
-      //       const SizedBox(height: 16),
-      //       _buildContentDisplay(processingState.content),
-      //     ],
-      //   );
+      case SharedContentReceived:
+        final receivedState = state as SharedContentReceived;
+        return _buildContentDisplay(receivedState.content);
 
-      // case SharedContentProcessed:
-      //   final processedState = state as SharedContentProcessed;
-      //   return Column(
-      //     children: [
-      //       const Icon(Icons.check_circle, color: Colors.green, size: 48),
-      //       const SizedBox(height: 16),
-      //       const Text('Content processed successfully!'),
-      //       const SizedBox(height: 16),
-      //       _buildContentDisplay(processedState.content),
-      //     ],
-      //   );
+      case SharedContentDisplaying:
+        final displayingState = state as SharedContentDisplaying;
+        return _buildContentDisplay(displayingState.content);
 
       case SharedContentError:
         final errorState = state as SharedContentError;
         return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.error, color: Colors.red, size: 48),
             const SizedBox(height: 16),
@@ -90,7 +75,7 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
         );
 
       default:
-        return const Text('Unknown state');
+        return const Center(child: Text('Unknown state'));
     }
   }
 

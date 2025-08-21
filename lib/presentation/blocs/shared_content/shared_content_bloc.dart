@@ -31,12 +31,15 @@ class SharedContentBloc extends Bloc<SharedContentEvent, SharedContentState> {
   ) async {
     try {
       emit(SharedContentInitializing());
-      await _processSharedContentUseCase.initialize();
+      print("jknjjjesdjkx");
       _sharedContentSubscription = _processSharedContentUseCase
-          .shardContentStream
+          .sharedContentStream
           .listen((content) {
+            print("jjjjdddd");
+            print(content);
             add(SharedContentReceived(content));
           });
+      await _processSharedContentUseCase.initialize();
 
       emit(SharedContentReady());
     } catch (e) {

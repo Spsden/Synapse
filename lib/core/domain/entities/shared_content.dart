@@ -20,5 +20,11 @@ class SharedContent extends Equatable {
   bool get hasText => content?.isNotEmpty == true;
 
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [
+    conversationIdentifier,
+    content,
+    attachments,
+    receivedAt,
+  ];
+
 }

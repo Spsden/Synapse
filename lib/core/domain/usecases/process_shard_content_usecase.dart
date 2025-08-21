@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:synapse/core/domain/entities/shared_content.dart';
 import 'package:synapse/core/domain/repositories/interfaces/shared_content_repo.dart';
 
@@ -8,8 +9,15 @@ class ProcessSharedContentUseCase {
 
   ProcessSharedContentUseCase(this._repository);
 
-  Stream<SharedContent> get shardContentStream =>
-      _repository.sharedContentStream;
+  // Stream<SharedContent> get sharedContentStream =>
+  //     _repository.sharedContentStream;
+
+  Stream<SharedContent> get sharedContentStream {
+      print("🟢 [UseCase] Someone subscribed to shardContentStream");
+
+    return _repository.sharedContentStream;
+  }
+
 
   Future<void> initialize() async {
     await _repository.initialize();

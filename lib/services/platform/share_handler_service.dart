@@ -11,31 +11,46 @@ class ShareHandlerService {
   // private constructor in dart
   ShareHandlerService._internal();
 
-  final ShareHandlerPlatform _handler = ShareHandlerPlatform.instance;
-  StreamController<SharedContentModel>? _sharedContentController;
+  late final StreamController<SharedContentModel> _sharedContentController =
+  StreamController<SharedContentModel>.broadcast();
 
-  Stream<SharedContentModel> get sharedContentStream {
-    // ignore: prefer_conditional_assignment
-    if (_sharedContentController == null) {
-      _sharedContentController =
-          StreamController<SharedContentModel>.broadcast();
-    }
-    return _sharedContentController!.stream;
-  }
+
+  final ShareHandlerPlatform _handler = ShareHandlerPlatform.instance;
+  SharedContentModel? _initialSharedContent;
+
+  Stream<SharedContentModel> get sharedContentStream =>
+      _sharedContentController.stream;
+
+
+  // Stream<SharedContentModel> get sharedContentStream {
+  //   // ignore: prefer_conditional_assignment
+  //   if (_sharedContentController == null) {
+  //     _sharedContentController =
+  //         StreamController<SharedContentModel>.broadcast();
+  //   }
+  //   return _sharedContentController!.stream;
+  // }
+
+  bool get hasInitialSharedContent => _initialSharedContent != null;
 
   Future<void> initialize() async {
+    // _sharedContentController ??=
+    //     StreamController<SharedContentModel>.broadcast();
+
     final initialMedia = await _handler.getInitialSharedMedia();
-    if(initialMedia!= null){
+    if (initialMedia != null) {
+      _initialSharedContent = SharedContentModel.fromSharedMedia(initialMedia);
       _emitSharedContent(initialMedia);
     }
 
-    _handler.sharedMediaStream.listen((SharedMedia media){
+    _handler.sharedMediaStream.listen((SharedMedia media) {
       _emitSharedContent(media);
     });
   }
 
-  void _emitSharedContent(SharedMedia media){
+  void _emitSharedContent(SharedMedia media) {
     final sharedContent = SharedContentModel.fromSharedMedia(media);
+    print("📤 [ShareHandlerService] Adding content: $sharedContent");
     _sharedContentController?.add(sharedContent);
   }
 
@@ -55,6 +70,5 @@ class ShareHandlerService {
 
   void dispose() {
     _sharedContentController?.close();
-    _sharedContentController = null;
   }
 }

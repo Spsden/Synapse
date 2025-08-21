@@ -16,5 +16,6 @@ class SharedAttachment extends Equatable {
   });
 
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [path, type, mimeType, size];
+
 }
