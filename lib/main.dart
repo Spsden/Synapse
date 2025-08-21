@@ -64,7 +64,7 @@ class SynapseApp extends StatelessWidget {
       ],
       child: MaterialApp.router(
         title: 'Synapse',
-        theme: AppTheme.darkTheme,
+        theme: AppTheme.theme,
         routerConfig: _router,
       ),
     );

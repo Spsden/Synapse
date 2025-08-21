@@ -16,6 +16,8 @@ class SharedContentScreen extends StatefulWidget {
 }
 
 class _SharedContentScreenState extends State<SharedContentScreen> {
+  String _selectedThinkMode = 'on_device'; // Default value
+
   @override
   void initState() {
     super.initState();
@@ -26,7 +28,7 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-       title: const Text('Hmm , you want this in your second brain ?')
+       title: const Text('Synapse: Capture')
       ),
       body: BlocBuilder<SharedContentBloc,SharedContentState>(
         builder: (context,state) {
@@ -80,50 +82,109 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
   }
 
   Widget _buildContentDisplay(dynamic content) {
-    return Expanded(
-      child: ListView(
-        padding: const EdgeInsets.all(16),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text("Conversation ID: ${content.conversationIdentifier ?? 'None'}"),
-          const SizedBox(height: 10),
-          Text("Shared text: ${content.content ?? 'No text'}"),
-          const SizedBox(height: 10),
-          Text("Shared files: ${content.attachments.length}"),
+          // // Conversation info
+          // Text("Conversation ID: ${content.conversationIdentifier ?? 'None'}"),
+          // const SizedBox(height: 8),
+          // Text("Shared text: ${content.content ?? 'No text'}"),
+          // const SizedBox(height: 8),
+
+          // Files / images preview
+          if (content.attachments.isNotEmpty)
+            Expanded(
+              child: ListView(
+                children: content.attachments
+                    .map<Widget>((attachment) => _buildAttachmentWidget(attachment))
+                    .toList(),
+              ),
+            ),
           const SizedBox(height: 16),
-          ...content.attachments.map((attachment) => _buildAttachmentWidget(attachment)),
+
+          // Input + record button
+          _buildActionArea(content),
         ],
       ),
     );
   }
 
+
   Widget _buildAttachmentWidget(dynamic attachment) {
     final path = attachment.path;
     if (path != null && attachment.type == SharedAttachmentType.image) {
-      return Column(
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              // context.read<SharedContentBloc>().add(
-              //   // RecordSentMessage(
-              //   //   conversationIdentifier: "custom-conversation-identifier",
-              //   //   conversationName: "John Doe",
-              //   //   conversationImageFilePath: path,
-              //   //   serviceName: "custom-service-name",
-              //   // ),
-              // );
-            },
-            child: const Text("Record message"),
-          ),
-          const SizedBox(height: 10),
-          Image.file(File(path)),
-          const SizedBox(height: 16),
-        ],
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Image.file(File(path), fit: BoxFit.cover),
       );
     } else {
       return Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Text("${attachment.type} Attachment: ${attachment.path}"),
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          color: Colors.grey[200],
+          child: Text("${attachment.type} Attachment: ${attachment.path}"),
+        ),
       );
     }
   }
+
+  Widget _buildActionArea(dynamic content) {
+    final TextEditingController _controller = TextEditingController();
+
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: _controller,
+            decoration:  InputDecoration(
+              hintText: "Add a note or message...",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12), // rounded corners
+                borderSide: BorderSide.none, // no border
+              ),
+            ),
+            onChanged: (text) {
+              // context.read<SharedContentBloc>().add(
+              //       AddAdditionalMessage(text),
+              //     );
+            },
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.mic),
+          onPressed: () {
+            // TODO: Handle audio recording
+          },
+          tooltip: 'Record audio note',
+        ),
+        DropdownButton<String>(
+          value: _selectedThinkMode,
+          onChanged: (String? newValue) {
+            if (newValue != null) {
+              setState(() {
+                _selectedThinkMode = newValue;
+              });
+              print('Selected think mode: $newValue');
+              // TODO: Dispatch event to BLoC to set think mode
+            }
+          },
+          items: <String>['on_device', 'cloud']
+              .map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value == 'on_device' ? 'On Device' : 'Cloud'),
+            );
+          }).toList(),
+          icon: const Icon(Icons.psychology_alt),
+          underline: Container(), // Hides the default underline
+          // tooltip: 'Select Think Mode',
+        ),
+      ],
+    );
+  }
+
+
 }
