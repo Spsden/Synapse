@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:synapse/data/datasources/local/database/entities/user_shared_table.dart';
+import 'package:synapse/data/data_sources/local/database/entities/user_shared_table.dart';
 
 class ContentAnalyses extends Table {
   late final id = integer().autoIncrement()();

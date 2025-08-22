@@ -1,4 +1,4 @@
-import 'package:synapse/data/datasources/local/database/database.dart';
+import 'package:synapse/data/data_sources/local/database/database.dart';
 
 abstract class DataBaseInteractionRepository {
 

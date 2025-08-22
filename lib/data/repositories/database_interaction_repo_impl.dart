@@ -1,6 +1,6 @@
 import 'package:synapse/core/domain/repositories/database_interaction_repo.dart';
-import 'package:synapse/data/datasources/local/database/daos/local_database_dao.dart';
-import 'package:synapse/data/datasources/local/database/database.dart';
+import 'package:synapse/data/data_sources/local/database/daos/local_database_dao.dart';
+import 'package:synapse/data/data_sources/local/database/database.dart';
 
 class DataBaseInteractionRepositoryImpl implements DataBaseInteractionRepository {
 

@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
-import 'package:synapse/data/datasources/local/database/entities/user_shared_table.dart';
-import 'package:synapse/data/datasources/local/database/entities/content_analyses.dart';
+import 'package:synapse/data/data_sources/local/database/entities/user_shared_table.dart';
+import 'package:synapse/data/data_sources/local/database/entities/content_analyses.dart';
 
 import '../database.dart';
 
