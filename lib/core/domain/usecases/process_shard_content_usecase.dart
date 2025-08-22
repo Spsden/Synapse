@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:synapse/core/domain/entities/shared_content.dart';
-import 'package:synapse/core/domain/repositories/interfaces/shared_content_repo.dart';
+import 'package:synapse/core/domain/repositories/shared_content_repo.dart';
 
 import '../entities/shared_attachment.dart';
 

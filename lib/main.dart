@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:synapse/core/domain/repositories/implementations/shared_content_repo_impl.dart';
+import 'package:synapse/data/repositories/shared_content_repo_impl.dart';
 import 'package:synapse/core/domain/usecases/process_shard_content_usecase.dart';
 import 'package:synapse/core/theme/theme.dart';
 import 'package:synapse/presentation/blocs/app_router/app_router_bloc.dart';
