@@ -1,11 +1,15 @@
 import 'dart:io';
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:synapse/data/data_sources/local/database/database.dart';
 import 'package:synapse/presentation/blocs/shared_content/shared_content_bloc.dart';
 import 'package:synapse/presentation/blocs/shared_content/shared_content_event.dart';
 
 import '../../../core/domain/entities/shared_attachment.dart';
+import '../../blocs/database/local_database_bloc.dart';
+import '../../blocs/database/local_database_event.dart';
 import '../../blocs/shared_content/shared_content_state.dart';
 import '../../widgets/mic_recorder_button.dart';
 
@@ -17,7 +21,6 @@ class SharedContentScreen extends StatefulWidget {
 }
 
 class _SharedContentScreenState extends State<SharedContentScreen> {
-  String _selectedThinkMode = 'on_device'; // Default value
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -144,8 +147,7 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
         // MIC BUTTON ON LEFT
         Container(
           margin: const EdgeInsets.only(right: 12), // Equal spacing
-          child:
-          MicRecorderButton(
+          child: MicRecorderButton(
             onRecordingComplete: (filePath) {
               // Handle recorded file path here
               debugPrint("Recorded file: $filePath");
@@ -196,7 +198,25 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
           margin: const EdgeInsets.only(left: 4),
           child: ElevatedButton(
             onPressed: () {
+              final String messageText = _controller.text;
+              final imagePath = content.attachments[0].path;
 
+              final userProvidedData = UserSharedTableCompanion.insert(
+                contentType: "text",
+                title: drift.Value("My First Title"),
+                userMessage: drift.Value(messageText),
+                audioPath: const drift.Value(null),
+                imagePath: drift.Value(imagePath),
+                isProcessed: const drift.Value(0),
+                createdAt: drift.Value(DateTime.now().millisecondsSinceEpoch),
+              );
+
+              context.read<LocalDataBaseContentBloc>().add(
+                InsertUserContent(userProvidedData),
+              );
+              if(kDebugMode){
+                print("Added to db");
+              }
             },
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),

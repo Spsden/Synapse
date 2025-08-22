@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:synapse/core/domain/repositories/database_interaction_repo.dart';
 import 'package:synapse/data/data_sources/local/database/database.dart';
 import 'package:synapse/data/repositories/shared_content_repo_impl.dart';
@@ -15,18 +16,23 @@ import 'package:synapse/presentation/screens/home/home_screen.dart';
 import 'package:synapse/presentation/screens/shared_content/shared_content_screen.dart';
 import 'package:synapse/services/platform/audio_record_service.dart';
 import 'package:synapse/services/platform/share_handler_service.dart';
-
 import 'data/repositories/database_interaction_repo_impl.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (kDebugMode) {
-    print("MAIN CALLED AGAINNNNNNN");
+    print("MAIN CALLED AGAINN");
   }
   final shareHandlerService = ShareHandlerService();
   await shareHandlerService.initialize();
   final database = SynapseAppDataBase();
+
+  final lol = await getApplicationSupportDirectory();
+  if (kDebugMode) {
+    print(lol.path + "DB YAHA HAI");
+  }
+
 
   runApp(
     SynapseApp(shareHandlerService: shareHandlerService, database: database),
