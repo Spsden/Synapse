@@ -1103,6 +1103,9 @@ abstract class _$SynapseAppDataBase extends GeneratedDatabase {
   late final $ContentAnalysesTable contentAnalyses = $ContentAnalysesTable(
     this,
   );
+  late final SynapseLocalDao synapseLocalDao = SynapseLocalDao(
+    this as SynapseAppDataBase,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();

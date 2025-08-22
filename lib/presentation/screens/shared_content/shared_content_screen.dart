@@ -196,7 +196,7 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
           margin: const EdgeInsets.only(left: 4),
           child: ElevatedButton(
             onPressed: () {
-              // TODO: Handle next button click
+
             },
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
