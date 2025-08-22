@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +7,7 @@ import 'package:synapse/presentation/blocs/shared_content/shared_content_event.d
 
 import '../../../core/domain/entities/shared_attachment.dart';
 import '../../blocs/shared_content/shared_content_state.dart';
+import '../../widgets/mic_recorder_button.dart';
 
 class SharedContentScreen extends StatefulWidget {
   const SharedContentScreen({super.key});
@@ -18,6 +18,7 @@ class SharedContentScreen extends StatefulWidget {
 
 class _SharedContentScreenState extends State<SharedContentScreen> {
   String _selectedThinkMode = 'on_device'; // Default value
+  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
@@ -29,10 +30,16 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-       title: const Text('Synapse: Capture')
+        title: const Text(
+          'Synapse: Capture',
+          style: TextStyle(
+            fontSize: 18, // Reduced title size
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
-      body: BlocBuilder<SharedContentBloc,SharedContentState>(
-        builder: (context,state) {
+      body: BlocBuilder<SharedContentBloc, SharedContentState>(
+        builder: (context, state) {
           return _buildBody(state);
         },
       ),
@@ -88,44 +95,42 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // // Conversation info
-          // Text("Conversation ID: ${content.conversationIdentifier ?? 'None'}"),
-          // const SizedBox(height: 8),
-          // Text("Shared text: ${content.content ?? 'No text'}"),
-          // const SizedBox(height: 8),
-
-          // Files / images preview
           if (content.attachments.isNotEmpty)
             Expanded(
               child: ListView(
                 children: content.attachments
-                    .map<Widget>((attachment) => _buildAttachmentWidget(attachment))
+                    .map<Widget>(
+                      (attachment) => _buildAttachmentWidget(attachment),
+                    )
                     .toList(),
               ),
             ),
           const SizedBox(height: 16),
-
-          // Input + record button
           _buildActionArea(content),
         ],
       ),
     );
   }
 
-
   Widget _buildAttachmentWidget(dynamic attachment) {
     final path = attachment.path;
     if (path != null && attachment.type == SharedAttachmentType.image) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 16),
-        child: Image.file(File(path), fit: BoxFit.cover),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16), // Circular image preview
+          child: Image.file(File(path), fit: BoxFit.cover),
+        ),
       );
     } else {
       return Padding(
         padding: const EdgeInsets.only(bottom: 16),
         child: Container(
-          padding: const EdgeInsets.all(8),
-          color: Colors.grey[200],
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(12), // Rounded file box
+          ),
           child: Text("${attachment.type} Attachment: ${attachment.path}"),
         ),
       );
@@ -133,61 +138,76 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
   }
 
   Widget _buildActionArea(dynamic content) {
-    final TextEditingController _controller = TextEditingController();
-
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        // MIC BUTTON ON LEFT
+        Container(
+          margin: const EdgeInsets.only(right: 12), // Equal spacing
+          child:
+          MicRecorderButton(
+            onRecordingComplete: (filePath) {
+              // Handle recorded file path here
+              debugPrint("Recorded file: $filePath");
+            },
+            onNext: () {
+              debugPrint("Proceed to next step");
+            },
+          ),
+
+          // GestureDetector(
+          //   onTap: () {
+          //     // TODO: Handle audio recording
+          //   },
+          //   child: Container(
+          //     width: 48, // Fixed size to match next button visually
+          //     height: 48,
+          //     decoration: const BoxDecoration(
+          //       shape: BoxShape.circle,
+          //       gradient: LinearGradient(
+          //         colors: [Color(0xFF2A2C3A), Color(0xFF3B3D5A)],
+          //         begin: Alignment.topLeft,
+          //         end: Alignment.bottomRight,
+          //       ),
+          //     ),
+          //     child: const Icon(Icons.mic, color: Colors.white, size: 22),
+          //   ),
+          // ),
+        ),
+
         Expanded(
           child: TextField(
             controller: _controller,
-            decoration:  InputDecoration(
+            decoration: InputDecoration(
               hintText: "Add a note or message...",
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12), // rounded corners
-                borderSide: BorderSide.none, // no border
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide.none,
               ),
             ),
-            onChanged: (text) {
-              // context.read<SharedContentBloc>().add(
-              //       AddAdditionalMessage(text),
-              //     );
-            },
           ),
         ),
-        IconButton(
-          icon: const Icon(Icons.mic),
-          onPressed: () {
-            // TODO: Handle audio recording
-          },
-          tooltip: 'Record audio note',
-        ),
-        DropdownButton<String>(
-          value: _selectedThinkMode,
-          onChanged: (String? newValue) {
-            if (newValue != null) {
-              setState(() {
-                _selectedThinkMode = newValue;
-              });
-              if (kDebugMode) {
-                print('Selected think mode: $newValue');
-              }
-              // TODO: Dispatch event to BLoC to set think mode
-            }
-          },
-          items: <String>['on_device', 'cloud']
-              .map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value == 'on_device' ? 'On Device' : 'Cloud'),
-            );
-          }).toList(),
-          icon: const Icon(Icons.psychology_alt),
-          underline: Container(), // Hides the default underline
-          // tooltip: 'Select Think Mode',
+
+        Container(
+          margin: const EdgeInsets.only(left: 4),
+          child: ElevatedButton(
+            onPressed: () {
+              // TODO: Handle next button click
+            },
+            style: ElevatedButton.styleFrom(
+              shape: const CircleBorder(),
+              padding: const EdgeInsets.all(14),
+              backgroundColor: Colors.blueAccent,
+              elevation: 4,
+            ),
+            child: const Icon(Icons.arrow_forward, color: Colors.white),
+          ),
         ),
       ],
     );
   }
-
-
 }
