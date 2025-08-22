@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:synapse/presentation/blocs/app_router/app_router_event.dart';
@@ -13,7 +14,9 @@ class AppRouterBloc extends Bloc<AppRouterEvent, AppRouterState> {
 
   AppRouterBloc(this._shareHandlerService, this._router)
     : super(AppRouterInitializing()) {
-    print("✅ AppRouterBloc has been created." ); // <-- ADD THIS LINE
+    if (kDebugMode) {
+      print("✅ AppRouterBloc has been created." );
+    } // <-- ADD THIS LINE
 
     on<AppRouterInitialize>(_onInitialize);
     on<NavigateToHome>(_onNavigateToHome);
@@ -27,34 +30,33 @@ class AppRouterBloc extends Bloc<AppRouterEvent, AppRouterState> {
   ) async {
     try {
 
-      print("▶️ AppRouterBloc is initializing and starting listeners...");
+      if (kDebugMode) {
+        print("AppRouterBloc is initializing and starting listeners...");
+      }
 
       await _shareHandlerService.initialize();
 
-      print(_shareHandlerService.hasInitialSharedContent.toString() + "SURAJ YE DEKJH");
+      if (kDebugMode) {
+        print("Has initial shared content: ${_shareHandlerService.hasInitialSharedContent}");
+      }
 
-      if(_router.routerDelegate.currentConfiguration.uri.path == "/" && _shareHandlerService.hasInitialSharedContent == false){
-        add(NavigateToHome());
-        emit(AppRouterHome());
-
-      } else if(_shareHandlerService.hasInitialSharedContent){
-        add(NavigateToSharedContent());
+      if (_shareHandlerService.hasInitialSharedContent) {
+        // App was launched via share intent
+        print(" App launched with shared content - going to SharedContentScreen");
         emit(AppRouterSharedContent());
       } else {
-        add(NavigateToHome());
+        // Normal app launch
+        print(" Normal app launch - going to HomeScreen");
         emit(AppRouterHome());
       }
 
-      // Listen for runtime shared content
+      // This handles shares that happen WHILE the app is running
       _listenToSharedContent();
 
-      // // Emit ready state (routing is handled by go_router redirect)
-      // if (_shareHandlerService.hasInitialSharedContent) {
-      //   emit(AppRouterSharedContent());
-      // } else {
-      //   emit(AppRouterHome());
-      // }
     } catch (e) {
+      if(kDebugMode){
+        print("Error from app router bloc : $e");
+      }
       emit(AppRouterHome());
     }
   }
@@ -85,7 +87,9 @@ class AppRouterBloc extends Bloc<AppRouterEvent, AppRouterState> {
     _sharedContentSubscription?.cancel();
     _sharedContentSubscription = _shareHandlerService.sharedContentStream
         .listen((sharedContent) {
-          print("Something detected SURRAJJ");
+          if (kDebugMode) {
+            print("New shared content while app running: $sharedContent");
+          }
           add(SharedContentDetected());
         });
   }
@@ -96,3 +100,4 @@ class AppRouterBloc extends Bloc<AppRouterEvent, AppRouterState> {
     return super.close();
   }
 }
+

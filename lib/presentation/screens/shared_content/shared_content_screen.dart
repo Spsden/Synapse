@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:synapse/presentation/blocs/shared_content/shared_content_bloc.dart';
@@ -167,7 +168,9 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
               setState(() {
                 _selectedThinkMode = newValue;
               });
-              print('Selected think mode: $newValue');
+              if (kDebugMode) {
+                print('Selected think mode: $newValue');
+              }
               // TODO: Dispatch event to BLoC to set think mode
             }
           },

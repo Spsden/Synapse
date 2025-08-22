@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -15,7 +16,10 @@ import 'package:synapse/services/platform/share_handler_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize ShareHandlerService before creating router
+  // Initialize ShareHandlerService before creating route
+  if(kDebugMode){
+    print("MAIN CALLED AGAINNNNNNN");
+  }
   final shareHandlerService = ShareHandlerService();
   await shareHandlerService.initialize();
 
@@ -26,7 +30,7 @@ class SynapseApp extends StatelessWidget {
   final ShareHandlerService _shareHandlerService;
 
   SynapseApp({super.key, required ShareHandlerService shareHandlerService})
-      : _shareHandlerService = shareHandlerService;
+    : _shareHandlerService = shareHandlerService;
 
   late final GoRouter _router = GoRouter(
     initialLocation: '/',
@@ -44,7 +48,8 @@ class SynapseApp extends StatelessWidget {
     ],
     redirect: (context, state) {
       // Now this will work correctly since ShareHandlerService is already initialized
-      if (_shareHandlerService.hasInitialSharedContent && state.uri.path == '/') {
+      if (_shareHandlerService.hasInitialSharedContent &&
+          state.uri.path == '/') {
         return '/shared_content';
       }
       return null;
@@ -62,7 +67,9 @@ class SynapseApp extends StatelessWidget {
       providers: [
         BlocProvider(
           lazy: false,
-          create: (context) => AppRouterBloc(_shareHandlerService, _router)..add(AppRouterInitialize()),
+          create: (context) =>
+              AppRouterBloc(_shareHandlerService, _router)
+                ..add(AppRouterInitialize()),
         ),
         BlocProvider(
           create: (context) => SharedContentBloc(

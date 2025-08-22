@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:synapse/core/domain/usecases/process_shard_content_usecase.dart';
 import 'package:synapse/presentation/blocs/shared_content/shared_content_event.dart';
@@ -31,14 +32,19 @@ class SharedContentBloc extends Bloc<SharedContentEvent, SharedContentState> {
   ) async {
     try {
       emit(SharedContentInitializing());
-      print("jknjjjesdjkx");
+      if (kDebugMode) {
+        print("SharedContentBloc initializing...");
+      }
       _sharedContentSubscription = _processSharedContentUseCase
           .sharedContentStream
           .listen((content) {
-            print("jjjjdddd");
-            print(content);
+            if (kDebugMode) {
+              print("Shared content received in bloc: $content");
+            }
             add(SharedContentReceived(content));
           });
+
+      //to setup databases or stuff, currently useless
       await _processSharedContentUseCase.initialize();
 
       emit(SharedContentReady());

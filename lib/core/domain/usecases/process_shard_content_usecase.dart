@@ -13,14 +13,18 @@ class ProcessSharedContentUseCase {
   //     _repository.sharedContentStream;
 
   Stream<SharedContent> get sharedContentStream {
+    if (kDebugMode) {
       print("🟢 [UseCase] Someone subscribed to shardContentStream");
+    }
 
     return _repository.sharedContentStream;
   }
 
 
+
   Future<void> initialize() async {
-    await _repository.initialize();
+    ///TODO initialise something else here
+    // await _repository.initialize();
   }
 
   Future<void> processSharedContent(SharedContent content) async {
@@ -29,14 +33,15 @@ class ProcessSharedContentUseCase {
       for (final attachment in content.attachments) {
         if (attachment.type == SharedAttachmentType.image &&
             attachment.path != null) {
-          print(attachment.toString());
+          if (kDebugMode) {
+            print(attachment.toString());
+          }
         }
       }
     }
 
     // Process text content if available
     if (content.hasText) {
-      // Could trigger text analysis here
     }
   }
 }
