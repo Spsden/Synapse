@@ -5,23 +5,31 @@ import 'package:synapse/core/domain/repositories/implementations/shared_content_
 import 'package:synapse/core/domain/usecases/process_shard_content_usecase.dart';
 import 'package:synapse/core/theme/theme.dart';
 import 'package:synapse/presentation/blocs/app_router/app_router_bloc.dart';
+import 'package:synapse/presentation/blocs/app_router/app_router_event.dart';
 import 'package:synapse/presentation/blocs/shared_content/shared_content_bloc.dart';
 import 'package:synapse/presentation/screens/home/home_screen.dart';
 import 'package:synapse/presentation/screens/shared_content/shared_content_screen.dart';
 import 'package:synapse/services/platform/audio_record_service.dart';
 import 'package:synapse/services/platform/share_handler_service.dart';
 
-void main() {
-  runApp(SynapseApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize ShareHandlerService before creating router
+  final shareHandlerService = ShareHandlerService();
+  await shareHandlerService.initialize();
+
+  runApp(SynapseApp(shareHandlerService: shareHandlerService));
 }
 
 class SynapseApp extends StatelessWidget {
-  SynapseApp({super.key});
+  final ShareHandlerService _shareHandlerService;
 
-  final ShareHandlerService _shareHandlerService = ShareHandlerService();
+  SynapseApp({super.key, required ShareHandlerService shareHandlerService})
+      : _shareHandlerService = shareHandlerService;
 
   late final GoRouter _router = GoRouter(
-    initialLocation: '/shared_content',
+    initialLocation: '/',
     routes: [
       GoRoute(
         path: '/',
@@ -35,8 +43,9 @@ class SynapseApp extends StatelessWidget {
       ),
     ],
     redirect: (context, state) {
-      if (_shareHandlerService.hasInitialSharedContent && state.path == '/') {
-        return '/shared-content';
+      // Now this will work correctly since ShareHandlerService is already initialized
+      if (_shareHandlerService.hasInitialSharedContent && state.uri.path == '/') {
+        return '/shared_content';
       }
       return null;
     },
@@ -48,10 +57,12 @@ class SynapseApp extends StatelessWidget {
       final config = _router.routerDelegate.currentConfiguration;
       debugPrint("🔹 Current Route: ${config.uri.toString()}");
     });
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => AppRouterBloc(_shareHandlerService, _router),
+          lazy: false,
+          create: (context) => AppRouterBloc(_shareHandlerService, _router)..add(AppRouterInitialize()),
         ),
         BlocProvider(
           create: (context) => SharedContentBloc(

@@ -13,6 +13,8 @@ class AppRouterBloc extends Bloc<AppRouterEvent, AppRouterState> {
 
   AppRouterBloc(this._shareHandlerService, this._router)
     : super(AppRouterInitializing()) {
+    print("✅ AppRouterBloc has been created." ); // <-- ADD THIS LINE
+
     on<AppRouterInitialize>(_onInitialize);
     on<NavigateToHome>(_onNavigateToHome);
     on<NavigateToSharedContent>(_onNavigateToSharedContent);
@@ -24,17 +26,34 @@ class AppRouterBloc extends Bloc<AppRouterEvent, AppRouterState> {
     Emitter<AppRouterState> emit,
   ) async {
     try {
+
+      print("▶️ AppRouterBloc is initializing and starting listeners...");
+
       await _shareHandlerService.initialize();
+
+      print(_shareHandlerService.hasInitialSharedContent.toString() + "SURAJ YE DEKJH");
+
+      if(_router.routerDelegate.currentConfiguration.uri.path == "/" && _shareHandlerService.hasInitialSharedContent == false){
+        add(NavigateToHome());
+        emit(AppRouterHome());
+
+      } else if(_shareHandlerService.hasInitialSharedContent){
+        add(NavigateToSharedContent());
+        emit(AppRouterSharedContent());
+      } else {
+        add(NavigateToHome());
+        emit(AppRouterHome());
+      }
 
       // Listen for runtime shared content
       _listenToSharedContent();
 
-      // Emit ready state (routing is handled by go_router redirect)
-      if (_shareHandlerService.hasInitialSharedContent) {
-        emit(AppRouterSharedContent());
-      } else {
-        emit(AppRouterHome());
-      }
+      // // Emit ready state (routing is handled by go_router redirect)
+      // if (_shareHandlerService.hasInitialSharedContent) {
+      //   emit(AppRouterSharedContent());
+      // } else {
+      //   emit(AppRouterHome());
+      // }
     } catch (e) {
       emit(AppRouterHome());
     }
@@ -49,7 +68,7 @@ class AppRouterBloc extends Bloc<AppRouterEvent, AppRouterState> {
     NavigateToSharedContent event,
     Emitter<AppRouterState> emit,
   ) {
-    _router.goNamed('shared-content');
+    _router.goNamed('shared_content');
     emit(AppRouterSharedContent());
   }
 
@@ -57,7 +76,7 @@ class AppRouterBloc extends Bloc<AppRouterEvent, AppRouterState> {
     SharedContentDetected event,
     Emitter<AppRouterState> emit,
   ) {
-    _router.goNamed('shared-content');
+    _router.goNamed('shared_content');
     emit(AppRouterSharedContent());
   }
 
@@ -66,6 +85,7 @@ class AppRouterBloc extends Bloc<AppRouterEvent, AppRouterState> {
     _sharedContentSubscription?.cancel();
     _sharedContentSubscription = _shareHandlerService.sharedContentStream
         .listen((sharedContent) {
+          print("Something detected SURRAJJ");
           add(SharedContentDetected());
         });
   }
