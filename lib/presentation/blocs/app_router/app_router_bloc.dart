@@ -12,11 +12,14 @@ class AppRouterBloc extends Bloc<AppRouterEvent, AppRouterState> {
   final GoRouter _router;
   StreamSubscription? _sharedContentSubscription;
 
+  bool _launchedViaShare = false;
+  bool get launchedViaShare => _launchedViaShare;
+
   AppRouterBloc(this._shareHandlerService, this._router)
     : super(AppRouterInitializing()) {
     if (kDebugMode) {
       print("✅ AppRouterBloc has been created." );
-    } // <-- ADD THIS LINE
+    }
 
     on<AppRouterInitialize>(_onInitialize);
     on<NavigateToHome>(_onNavigateToHome);
@@ -42,7 +45,10 @@ class AppRouterBloc extends Bloc<AppRouterEvent, AppRouterState> {
 
       if (_shareHandlerService.hasInitialSharedContent) {
         // App was launched via share intent
-        print(" App launched with shared content - going to SharedContentScreen");
+        _launchedViaShare = true; // Set the flag
+        if (kDebugMode) {
+          print(" App launched with shared content - going to SharedContentScreen");
+        }
         emit(AppRouterSharedContent());
       } else {
         // Normal app launch
@@ -78,6 +84,7 @@ class AppRouterBloc extends Bloc<AppRouterEvent, AppRouterState> {
     SharedContentDetected event,
     Emitter<AppRouterState> emit,
   ) {
+    _launchedViaShare = false;
     _router.goNamed('shared_content');
     emit(AppRouterSharedContent());
   }
@@ -92,6 +99,10 @@ class AppRouterBloc extends Bloc<AppRouterEvent, AppRouterState> {
           }
           add(SharedContentDetected());
         });
+  }
+
+  void resetLaunchFlag() {
+    _launchedViaShare = false;
   }
 
   @override

@@ -24,8 +24,8 @@ class ShareHandlerService {
   Future<void> initialize() async {
 
     if(kDebugMode) {
-      print("🟢 WHO CALLED initialize method in the share service?");
-      print(StackTrace.current.toString().split('\n').take(5).join('\n'));
+      // print("🟢 WHO CALLED initialize method in the share service?");
+      // print(StackTrace.current.toString().split('\n').take(5).join('\n'));
     }
     if (_initialized) {
       if(kDebugMode){
@@ -33,7 +33,6 @@ class ShareHandlerService {
       }
       return;
     }
-
 
     // Check if app was launched via share intent
     final initialMedia = await _handler.getInitialSharedMedia();

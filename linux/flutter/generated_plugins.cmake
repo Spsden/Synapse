@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   record_linux
+  rive_common
   sqlite3_flutter_libs
 )
 

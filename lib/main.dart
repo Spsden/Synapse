@@ -30,7 +30,7 @@ void main() async {
 
   final lol = await getApplicationSupportDirectory();
   if (kDebugMode) {
-    print(lol.path + "DB YAHA HAI");
+    print("${lol.path}DB YAHA HAI");
   }
 
 

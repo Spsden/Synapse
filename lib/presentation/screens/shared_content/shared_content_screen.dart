@@ -8,10 +8,13 @@ import 'package:synapse/presentation/blocs/shared_content/shared_content_bloc.da
 import 'package:synapse/presentation/blocs/shared_content/shared_content_event.dart';
 
 import '../../../core/domain/entities/shared_attachment.dart';
+import '../../blocs/app_router/app_router_bloc.dart';
 import '../../blocs/database/local_database_bloc.dart';
 import '../../blocs/database/local_database_event.dart';
+import '../../blocs/database/local_database_state.dart';
 import '../../blocs/shared_content/shared_content_state.dart';
 import '../../widgets/mic_recorder_button.dart';
+import '../memory_success_screen.dart';
 
 class SharedContentScreen extends StatefulWidget {
   const SharedContentScreen({super.key});
@@ -22,6 +25,7 @@ class SharedContentScreen extends StatefulWidget {
 
 class _SharedContentScreenState extends State<SharedContentScreen> {
   final TextEditingController _controller = TextEditingController();
+  void Function(int)? _updateAnimationState;
 
   @override
   void initState() {
@@ -31,20 +35,37 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Synapse: Capture',
-          style: TextStyle(
-            fontSize: 18, // Reduced title size
-            fontWeight: FontWeight.w600,
+    return BlocListener<LocalDataBaseContentBloc, ContentState>(
+      listener: (context, state) {
+        if (state is ContentInserted) {
+          // Success - trigger success animation (1)
+          _updateAnimationState?.call(1);
+          if (kDebugMode) {
+            print("Successfully added to DB with ID: ${state.insertedId}");
+          }
+        } else if (state is LocalDataBaseContentError) {
+          // Failure - trigger failure animation (0)
+          _updateAnimationState?.call(0);
+          if (kDebugMode) {
+            print("Failed to add to DB: ${state.message}");
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Synapse: Capture',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
-      ),
-      body: BlocBuilder<SharedContentBloc, SharedContentState>(
-        builder: (context, state) {
-          return _buildBody(state);
-        },
+        body: BlocBuilder<SharedContentBloc, SharedContentState>(
+          builder: (context, state) {
+            return _buildBody(state);
+          },
+        ),
       ),
     );
   }
@@ -104,7 +125,7 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
                 children: content.attachments
                     .map<Widget>(
                       (attachment) => _buildAttachmentWidget(attachment),
-                    )
+                )
                     .toList(),
               ),
             ),
@@ -121,7 +142,7 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
       return Padding(
         padding: const EdgeInsets.only(bottom: 16),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(16), // Circular image preview
+          borderRadius: BorderRadius.circular(16),
           child: Image.file(File(path), fit: BoxFit.cover),
         ),
       );
@@ -132,7 +153,7 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(12), // Rounded file box
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Text("${attachment.type} Attachment: ${attachment.path}"),
         ),
@@ -144,39 +165,17 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // MIC BUTTON ON LEFT
         Container(
-          margin: const EdgeInsets.only(right: 12), // Equal spacing
+          margin: const EdgeInsets.only(right: 12),
           child: MicRecorderButton(
             onRecordingComplete: (filePath) {
-              // Handle recorded file path here
               debugPrint("Recorded file: $filePath");
             },
             onNext: () {
               debugPrint("Proceed to next step");
             },
           ),
-
-          // GestureDetector(
-          //   onTap: () {
-          //     // TODO: Handle audio recording
-          //   },
-          //   child: Container(
-          //     width: 48, // Fixed size to match next button visually
-          //     height: 48,
-          //     decoration: const BoxDecoration(
-          //       shape: BoxShape.circle,
-          //       gradient: LinearGradient(
-          //         colors: [Color(0xFF2A2C3A), Color(0xFF3B3D5A)],
-          //         begin: Alignment.topLeft,
-          //         end: Alignment.bottomRight,
-          //       ),
-          //     ),
-          //     child: const Icon(Icons.mic, color: Colors.white, size: 22),
-          //   ),
-          // ),
         ),
-
         Expanded(
           child: TextField(
             controller: _controller,
@@ -193,11 +192,15 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
             ),
           ),
         ),
-
         Container(
           margin: const EdgeInsets.only(left: 4),
-          child: ElevatedButton(
-            onPressed: () {
+          child: MemorySuccessPage(
+            riveAssetPath: 'assets/animation/brain_animation.riv',
+            onAnimationStateChanged: (callback) {
+              // Store the callback so we can call it when DB operation completes
+              _updateAnimationState = callback;
+            },
+            onAddedToMemory: () async {
               final String messageText = _controller.text;
               final imagePath = content.attachments[0].path;
 
@@ -211,20 +214,17 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
                 createdAt: drift.Value(DateTime.now().millisecondsSinceEpoch),
               );
 
+              // Set loading state (2) before database operation
+              _updateAnimationState?.call(2);
+
               context.read<LocalDataBaseContentBloc>().add(
                 InsertUserContent(userProvidedData),
               );
-              if(kDebugMode){
-                print("Added to db");
+
+              if (kDebugMode) {
+                print("Attempting to add to DB");
               }
             },
-            style: ElevatedButton.styleFrom(
-              shape: const CircleBorder(),
-              padding: const EdgeInsets.all(14),
-              backgroundColor: Colors.blueAccent,
-              elevation: 4,
-            ),
-            child: const Icon(Icons.arrow_forward, color: Colors.white),
           ),
         ),
       ],
