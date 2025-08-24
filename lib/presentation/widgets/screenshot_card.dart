@@ -9,24 +9,24 @@ class ScreenshotCard extends StatelessWidget {
 
   const ScreenshotCard({super.key, required this.content});
 
-  String _formatDate(DateTime? date) {
-    if (date == null) return '';
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inDays == 0) {
-      if (difference.inHours == 0) {
-        return '${difference.inMinutes}m ago';
-      }
-      return '${difference.inHours}h ago';
-    } else if (difference.inDays == 1) {
-      return 'Yesterday';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
-    } else {
-      return DateFormat('MMM dd').format(date);
-    }
-  }
+  // String _formatDate(DateTime? date) {
+  //   if (date == null) return '';
+  //   final now = DateTime.now();
+  //   final difference = now.difference(date);
+  //
+  //   if (difference.inDays == 0) {
+  //     if (difference.inHours == 0) {
+  //       return '${difference.inMinutes}m ago';
+  //     }
+  //     return '${difference.inHours}h ago';
+  //   } else if (difference.inDays == 1) {
+  //     return 'Yesterday';
+  //   } else if (difference.inDays < 7) {
+  //     return '${difference.inDays}d ago';
+  //   } else {
+  //     return DateFormat('MMM dd').format(date);
+  //   }
+  // }
 
   DateTime? _getCreatedAt() {
     return DateTime.fromMillisecondsSinceEpoch(content.createdAt * 1000);
@@ -115,7 +115,7 @@ class ScreenshotCard extends StatelessWidget {
       onTap: content != null
           ? () {
               // Navigate to content detail view or show a dialog
-              _showContentDetails(context);
+              // _showContentDetails(context);
             }
           : null,
       child: Container(
@@ -235,31 +235,23 @@ class ScreenshotCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       ...[
-                        Text(
-                          _formatDate(_getCreatedAt()),
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                        ),
+
                       ],
-                      if (content.userMessage != null &&
-                          content.userMessage!.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          content.userMessage!,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                      // if (content.userMessage != null &&
+                      //     content.userMessage!.isNotEmpty) ...[
+                      //   const SizedBox(height: 4),
+                      //   Text(
+                      //     content.userMessage!,
+                      //     style: Theme.of(context).textTheme.bodySmall
+                      //         ?.copyWith(
+                      //           color: Theme.of(
+                      //             context,
+                      //           ).colorScheme.onSurfaceVariant,
+                      //         ),
+                      //     maxLines: 2,
+                      //     overflow: TextOverflow.ellipsis,
+                      //   ),
+                      // ],
                     ],
                   ),
                 ),
@@ -271,54 +263,54 @@ class ScreenshotCard extends StatelessWidget {
     );
   }
 
-  void _showContentDetails(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(content.title ?? 'Content Details'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (content.userMessage != null) ...[
-                Text('Message:', style: Theme.of(context).textTheme.titleSmall),
-                const SizedBox(height: 4),
-                Text(content.userMessage!),
-                const SizedBox(height: 12),
-              ],
-              Text('Type:', style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: 4),
-              Text(content.contentType ?? 'Unknown'),
-              const SizedBox(height: 12),
-              Text('Created:', style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: 4),
-              Text(_formatDate(_getCreatedAt())),
-              const SizedBox(height: 12),
-              Text('Status:', style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: 4),
-              Text(content.isProcessed == 1 ? 'Processed' : 'Pending'),
-              if (content.audioPath != null) ...[
-                const SizedBox(height: 12),
-                Text(
-                  'Has Audio:',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const SizedBox(height: 4),
-                Text('Yes'),
-              ],
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showContentDetails(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: Text(content.title ?? 'Content Details'),
+  //       content: SingleChildScrollView(
+  //         child: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             if (content.userMessage != null) ...[
+  //               Text('Message:', style: Theme.of(context).textTheme.titleSmall),
+  //               const SizedBox(height: 4),
+  //               Text(content.userMessage!),
+  //               const SizedBox(height: 12),
+  //             ],
+  //             Text('Type:', style: Theme.of(context).textTheme.titleSmall),
+  //             const SizedBox(height: 4),
+  //             Text(content.contentType ?? 'Unknown'),
+  //             const SizedBox(height: 12),
+  //             Text('Created:', style: Theme.of(context).textTheme.titleSmall),
+  //             const SizedBox(height: 4),
+  //             Text(_formatDate(_getCreatedAt())),
+  //             const SizedBox(height: 12),
+  //             Text('Status:', style: Theme.of(context).textTheme.titleSmall),
+  //             const SizedBox(height: 4),
+  //             Text(content.isProcessed == 1 ? 'Processed' : 'Pending'),
+  //             if (content.audioPath != null) ...[
+  //               const SizedBox(height: 12),
+  //               Text(
+  //                 'Has Audio:',
+  //                 style: Theme.of(context).textTheme.titleSmall,
+  //               ),
+  //               const SizedBox(height: 4),
+  //               Text('Yes'),
+  //             ],
+  //           ],
+  //         ),
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.of(context).pop(),
+  //           child: const Text('Close'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   IconData _getContentTypeIcon() {
     if (content == null) return Icons.image;

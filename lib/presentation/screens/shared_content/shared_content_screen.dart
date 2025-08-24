@@ -203,9 +203,10 @@ class _SharedContentScreenState extends State<SharedContentScreen> {
             onAddedToMemory: () async {
               final String messageText = _controller.text;
               final imagePath = content.attachments[0].path;
+              final typeOfFile = content.attachments[0].type.toString().split('.').last;
 
               final userProvidedData = UserSharedTableCompanion.insert(
-                contentType: "text",
+                contentType: typeOfFile.toString(),
                 title: drift.Value("My First Title"),
                 userMessage: drift.Value(messageText),
                 audioPath: const drift.Value(null),
