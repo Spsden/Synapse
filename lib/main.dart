@@ -13,6 +13,7 @@ import 'package:synapse/presentation/blocs/app_router/app_router_event.dart';
 import 'package:synapse/presentation/blocs/database/local_database_bloc.dart';
 import 'package:synapse/presentation/blocs/shared_content/shared_content_bloc.dart';
 import 'package:synapse/presentation/screens/home/home_screen.dart';
+import 'package:synapse/presentation/screens/screenshot_list_screen.dart';
 import 'package:synapse/presentation/screens/shared_content/shared_content_screen.dart';
 import 'package:synapse/services/platform/audio_record_service.dart';
 import 'package:synapse/services/platform/share_handler_service.dart';
@@ -63,6 +64,11 @@ class SynapseApp extends StatelessWidget {
         name: 'shared_content',
         builder: (context, state) => SharedContentScreen(),
       ),
+      GoRoute(
+        path: '/screenshot_list_screen',
+        name: 'screenshot_list_screen',
+        builder: (context,state) => ScreenShotListScreen()
+      )
     ],
     redirect: (context, state) {
       if (_shareHandlerService.hasInitialSharedContent &&
